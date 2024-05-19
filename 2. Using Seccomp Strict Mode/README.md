@@ -1,0 +1,1 @@
+This shows simple demonstration of seccomp mode strict. It only allows a very limited set of system calls: read, write, _exit, and sigreturn. This makes it impractical for most use cases where a program needs to perform operations such as opening files or executing other programs.
