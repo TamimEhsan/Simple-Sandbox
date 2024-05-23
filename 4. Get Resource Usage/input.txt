@@ -1,0 +1,1 @@
+Hello, file! This is some text written using the open and write system calls.
