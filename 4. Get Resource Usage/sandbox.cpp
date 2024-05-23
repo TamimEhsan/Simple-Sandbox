@@ -9,34 +9,6 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 
-void get_memory_usage(pid_t pid) {
-    char path[256];
-    snprintf(path, sizeof(path), "/proc/%d/statm", pid);
-
-    FILE *file = fopen(path, "r");
-    if (file == NULL) {
-        perror("fopen");
-        return;
-    }
-
-    long size, resident, share, text, lib, data, dt;
-    if (fscanf(file, "%ld %ld %ld %ld %ld %ld %ld", &size, &resident, &share, &text, &lib, &data, &dt) != 7) {
-        perror("fscanf");
-        fclose(file);
-        return;
-    }
-
-    fclose(file);
-
-    long page_size = sysconf(_SC_PAGESIZE);
-
-    printf("Memory usage of process %d:\n", pid);
-    printf("Total program size: %ld KB\n", size * page_size / 1024);
-    printf("Resident set size: %ld KB\n", resident * page_size / 1024);
-    printf("Shared pages: %ld KB\n", share * page_size / 1024);
-    printf("Text (code): %ld KB\n", text * page_size / 1024);
-    printf("Data/Stack: %ld KB\n", data * page_size / 1024);
-}
 
 void apply_seccomp_filter() {
     int syscalls_whitelist[] = {
