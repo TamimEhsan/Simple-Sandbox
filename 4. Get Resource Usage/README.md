@@ -5,7 +5,7 @@ Now we try to find the resource usage of a spawned program. But we need to do so
 We will spawn a child process and use execv on that. And we will monitor the child process from the parent process. We will wait till the child exits and then measure the resource usage. 
 
 ### Memory usage status
-The resource usage of a process can be get by `getrusage(int who, struct rusage *rusage)` . The who parameter decides whethere we want the process itself or its children. The rusage struct will contain many useful info. See `man` for more usage. But for now we will work with only `rusage.ru_maxrss` which stands for maximum resident set size.
+The resource usage of a process can be get by `getrusage(int who, struct rusage *rusage)` . The who parameter decides whether we want the process itself or its children. The rusage struct will contain many useful info. See `man` for more usage. But for now we will work with only `rusage.ru_maxrss` which stands for maximum resident set size.
 
 
 
@@ -18,7 +18,7 @@ To check the programs are working correctly perform
 ```
 ./extern4
 ```
-You should see data writen to input.txt and data being read from it. \
+You should see program running normally. \
 Then we run the external programs inside sandbox
 ```
 ./sandbox extern4

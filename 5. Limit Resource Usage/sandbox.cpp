@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     if( child_pid == 0 ){
         // child process
 
-        // apply seccomp filter
+        // apply filter
         apply_seccomp_filter();
 
         // get the program to execute
@@ -99,6 +99,13 @@ int main(int argc, char *argv[]) {
         char *args[] = {program, NULL};
         char *env[] = {NULL};
         
+        
+        // set memory limit to about 10MB
+        struct rlimit limits;
+        limits.rlim_cur = 1048576*10+10; // set data segment limit to 10MB
+        limits.rlim_max = 1048576*10+10; // make sure the child can't increase it again
+        setrlimit(RLIMIT_DATA, &limits);
+
         // Execute the external program
         if (execve(program, args, env) == -1) {
             perror("execve");
@@ -106,19 +113,22 @@ int main(int argc, char *argv[]) {
         }
     }else{
         // parent or monitor
+        int process_exit_status;
 
-        // wait for the child to finish
-        wait(NULL);
+        // wait for the child to finish and get exit status
+        wait(&process_exit_status);
 
-        // get resource usage
+        // get the signal status
+        int signal = WTERMSIG(process_exit_status);
         struct rusage usage;
         int status = getrusage(RUSAGE_CHILDREN,&usage);
        
         printf("Memory usage of the program is %ld kb\n",usage.ru_maxrss);
-
-
+        printf("Exit status: %d\n", WEXITSTATUS(process_exit_status));
+        if( signal == SIGSEGV ) 
+            printf("Memory limit exceeded\n");
+        printf("Termination signal: %d\n", signal == SIGSEGV);
     }
-
 
     return 0;
 }
